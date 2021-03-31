@@ -2,13 +2,13 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-Clone or download the repo locally
+Clone or download the repo locally.
 
 Change to the project directory:
 ```
 cd fe-interview-1
 ```
-install requirements
+Install requirements
 ```
 npm install
 ```
