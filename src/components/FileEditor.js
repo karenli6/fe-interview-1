@@ -4,7 +4,8 @@ import {
     getFiles,
     getOpenFiles,
     getActiveFile,
-    removeFile,
+    // removeFile,
+    closeFile,
     selectFile,
     editFile,
 } from './../store';
@@ -102,7 +103,12 @@ function FileEditor( fileID, fileName ) {
                                     const nextFile = openFiles[ fileIndex ? 0 : 1 ]; 
                                     if ( nextFile ) dispatch( selectFile( nextFile ) );
                                 }
-                                dispatch( removeFile( fileID ) );
+                                // [PROBLEM 3] 
+                                // Expected: (DID NOT WORK) Clicking the ‘x’ in a file tab in the Editor closes the tab without removing the file.
+                                // Incorrect Previous Behavior: Clicking the 'x' removed the file and replaced it with a duplicate tab
+
+                                // SOLUTION: Import and implement closeFile, not removeFile
+                                dispatch(closeFile(fileID));
                             } }
                         >x</CloseFile>
                     </Tab>;

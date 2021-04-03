@@ -4,6 +4,7 @@ import {
     getFiles,
     addFile,
     selectFile,
+    removeFile,
 } from './../store';
 import styled from 'styled-components';
 import {
@@ -71,6 +72,12 @@ function File( { fileID, fileName } ) {
                 onClick={ ( ev ) => {
                     ev.preventDefault();
                     ev.stopPropagation();
+                    // [PROBLEM 2] 
+                    // Expected: (DID NOT WORK) Hovering in a file in the Browser and clicking the x deletes the file.
+                    // Incorrect Previous Behavior: Clicking thet 'x' does not delete the file
+
+                    // SOLUTION: Implement removeFile for the onClick event
+                    dispatch( removeFile( fileID ) );
                 } }
             >x</CloseFile>
         </FileContainer>
@@ -98,8 +105,11 @@ const ErrorText = styled.span`
     color: ${ props => props.theme.red };
 `;
 
-const validateFileName = ( name ) => {
-    if ( !fileNameIsValid( name ) ) return 'File name must must not contain spaces or certain characters';
+const validateFileName = ( name, nameArray ) => {
+    // changed isValid method to check if name already exists in nameArray array
+    const checkedResult = fileNameIsValid( name, nameArray )
+    // return corresponding error message
+    if ( checkedResult !== 'valid' ) return checkedResult;
     const extension = fileExtension( name );
     const allowedExtensions = Object.keys( FILE_TYPES );
     if ( !allowedExtensions.includes( extension ) ) return `Allowed extensions are ${ allowedExtensions.join( ', ' ) }`;
@@ -110,9 +120,16 @@ function AddFile() {
     const dispatch = useDispatch();
     const [ isAdding, setIsAdding ] = useState( false );
     const [ error, setError ] = useState( false );
+    // [PROBLEM 1] 
+        // Expected: Duplicate filename is rejected.
+        // Incorrect Previous Behavior: Duplicate filenames were allowed
+
+        // SOLUTION: pass in an array (currentFiles) of existing file names to validateFileName() in FileBrowser.js and fileNameIsValid() in helpers.js and compare newFileName to the array
+    const currentFiles = Object.values(useSelector( getFiles )).map(a => a.name)
     const createFile = ( ev ) => {
         const newFileName = ev.target.value;
-        const validationError = validateFileName( newFileName );
+        // pass in array of existing file names
+        const validationError = validateFileName( newFileName, currentFiles );
         setError( validationError );
         if ( !validationError ) {
             setIsAdding( false );
@@ -165,6 +182,7 @@ function AddFile() {
 
 function FileBrowser() {
     const files = useSelector( getFiles );
+    // console.log(files);
     return (
         <Container>
             <Header>Explorer</Header>

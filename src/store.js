@@ -84,7 +84,18 @@ const openFilesReducer = ( openFiles = [], action ) => {
         return openFiles.filter( fileID => fileID !== action.payload.fileID );
     case ADD_FILE:
     case SELECT_FILE:
-        return openFiles.concat( [ action.payload.fileID ] );
+        // [PROBLEM 4] 
+        // Expected: (DID NOT WORK) Clicking a file in the Explorer opens a tab if not already open.
+        // Incorrect Previous Behavior: Clicking a file in the Explorer opens a tab even if it was already open.
+
+        // SOLUTION: Only concat to openFiles if the fileID is not yet in openFiles array
+  
+        if (openFiles.includes(action.payload.fileID)){
+            return openFiles
+        } else{
+            return openFiles.concat( [ action.payload.fileID ] );
+
+        }
     default: return openFiles;
     }
 };
@@ -107,3 +118,4 @@ export const appReducer = combineReducers( {
     openFiles: openFilesReducer,
     activeFile: activeFileReducer,
 } );
+ 
